@@ -45,7 +45,7 @@ func InitializeConfig() Config {
 }
 
 func initFlag() {
-	flag.StringVar(&cfgPath, "config", "files/etc/app_config/config.dev.yaml", "location of config file")
+	flag.StringVar(&cfgPath, "config", "files/app_config/config.dev.yaml", "location of config file")
 	flag.Parse()
 }
 

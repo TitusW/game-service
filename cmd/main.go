@@ -54,6 +54,8 @@ func setupDB(configData config.Config) *gorm.DB {
 func main() {
 	mainCfg := config.InitializeConfig()
 
+	fmt.Println("Main Config: ", mainCfg)
+
 	router := gin.Default()
 
 	db := setupDB(mainCfg)
@@ -79,4 +81,6 @@ func main() {
 
 	router.POST("/auth/login", authHandler.Login)
 	router.POST("/auth/logout", authHandler.Logout)
+
+	router.Run()
 }
