@@ -40,7 +40,7 @@ func setupDB(configData config.Config) *gorm.DB {
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{
-			TablePrefix: "api.",
+			TablePrefix: "game.",
 		},
 	})
 
