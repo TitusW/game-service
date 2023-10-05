@@ -9,7 +9,7 @@ import (
 )
 
 func (uc Usecase) Login(ctx context.Context, input entity.User) (entity.TokenResponse, error) {
-	user, err := uc.userResource.Get(ctx, input.Email)
+	user, err := uc.userResource.GetByEmail(ctx, input.Email)
 	if err != nil {
 		return entity.TokenResponse{}, err
 	}
@@ -18,7 +18,7 @@ func (uc Usecase) Login(ctx context.Context, input entity.User) (entity.TokenRes
 		return entity.TokenResponse{}, err
 	}
 
-	passwordIsValid, err := verifyPassword(input.Password, user.Password)
+	passwordIsValid, err := verifyPassword(user.Password, input.Password)
 	if passwordIsValid != true {
 		return entity.TokenResponse{}, err
 	}
@@ -39,22 +39,22 @@ func (uc Usecase) Login(ctx context.Context, input entity.User) (entity.TokenRes
 	}
 
 	for _, token := range tokens {
-		uc.tokenResource.DeleteUserToken(ctx, user.Ksuid, token)
+		uc.tokenResource.DeleteUserTokenByKey(ctx, token)
 	}
 
-	uc.tokenResource.SetUserToken(ctx, token, refreshToken)
+	uc.tokenResource.SetUserToken(ctx, user.Ksuid, token)
 
 	return tokenResponse, nil
 }
 
 func (uc Usecase) Logout(ctx context.Context, input entity.User) error {
-	tokens, err := uc.tokenResource.ScanUserTokens(ctx, input.Email, "")
+	keys, err := uc.tokenResource.ScanUserTokens(ctx, input.Email, "")
 	if err != nil {
 		return err
 	}
 
-	for _, token := range tokens {
-		uc.tokenResource.DeleteUserToken(ctx, input.Email, token)
+	for _, key := range keys {
+		uc.tokenResource.DeleteUserTokenByKey(ctx, key)
 
 		if err != nil {
 			return err

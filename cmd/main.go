@@ -54,8 +54,6 @@ func setupDB(configData config.Config) *gorm.DB {
 func main() {
 	mainCfg := config.InitializeConfig()
 
-	fmt.Println("Main Config: ", mainCfg)
-
 	router := gin.Default()
 
 	db := setupDB(mainCfg)

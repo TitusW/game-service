@@ -15,9 +15,7 @@ func (m TokenModule) SetUserToken(ctx context.Context, userKsuid string, token s
 	return nil
 }
 
-func (m TokenModule) DeleteUserToken(ctx context.Context, userKsuid string, token string) error {
-	key := fmt.Sprintf("%s:%s", userKsuid, token)
-
+func (m TokenModule) DeleteUserTokenByKey(ctx context.Context, key string) error {
 	result := m.redis.Del(ctx, key)
 
 	if err := result.Err(); err != nil {

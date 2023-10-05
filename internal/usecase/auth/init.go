@@ -7,13 +7,13 @@ import (
 )
 
 type UserModuleItf interface {
-	Get(context.Context, string) (entity.User, error)
+	GetByEmail(ctx context.Context, email string) (entity.User, error)
 }
 
 type TokenModuleItf interface {
 	SetUserToken(context.Context, string, string) error
 	ScanUserTokens(context.Context, string, string) ([]string, error)
-	DeleteUserToken(context.Context, string, string) error
+	DeleteUserTokenByKey(context context.Context, key string) error
 }
 
 type Usecase struct {

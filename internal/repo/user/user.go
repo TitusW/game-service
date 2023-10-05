@@ -76,3 +76,17 @@ func (m UserModule) Get(ctx context.Context, ksuid string) (entity.User, error) 
 
 	return returnUser, nil
 }
+
+func (m UserModule) GetByEmail(ctx context.Context, email string) (entity.User, error) {
+	var user User
+
+	err := m.db.WithContext(ctx).Where("email = ?", email).First(&user).Error
+
+	if err != nil {
+		return entity.User{}, err
+	}
+
+	returnUser := convertToEntity(user)
+
+	return returnUser, nil
+}
