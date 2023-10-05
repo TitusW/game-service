@@ -9,7 +9,7 @@ import (
 
 type LedgerModuleItf interface {
 	CreateTX(ctx context.Context, input entity.Ledger, tx *gorm.DB) (entity.Ledger, error)
-	GetTX(ctx context.Context, walletKsuid string, tx *gorm.DB) ([]entity.Ledger, error)
+	GetByWalletKsuidTX(ctx context.Context, walletKsuid string, tx *gorm.DB) ([]entity.Ledger, error)
 }
 
 type WalletModuleItf interface {

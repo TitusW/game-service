@@ -38,7 +38,7 @@ func convertToEntity(row Wallet) entity.Wallet {
 func (m Module) UpdateTX(ctx context.Context, input entity.Wallet, tx *gorm.DB) (entity.Wallet, error) {
 	wallet := convertUpdateToModel(input)
 
-	err := tx.WithContext(ctx).Where("ksuid = ?", input.Ksuid).Updates(&wallet).Error
+	err := tx.WithContext(ctx).Select("current_amount", "updated_at").Where("ksuid = ?", input.Ksuid).Updates(&wallet).Error
 	if err != nil {
 		return entity.Wallet{}, err
 	}

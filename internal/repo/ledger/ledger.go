@@ -46,7 +46,7 @@ func (m Module) CreateTX(ctx context.Context, input entity.Ledger, tx *gorm.DB) 
 	return convertToEntity(ledger), nil
 }
 
-func (m Module) GetTX(ctx context.Context, walletKsuid string, tx *gorm.DB) ([]entity.Ledger, error) {
+func (m Module) GetByWalletKsuidTX(ctx context.Context, walletKsuid string, tx *gorm.DB) ([]entity.Ledger, error) {
 	var ledgers []Ledger
 
 	err := tx.WithContext(ctx).Where("wallet_ksuid", walletKsuid).Find(&ledgers).Error
