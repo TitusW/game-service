@@ -1,6 +1,7 @@
 package token
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -40,4 +41,20 @@ func GenerateAllTokens(email string, ksuid string) (signedToken string, signedRe
 	}
 
 	return token, refreshToken, err
+}
+
+func ExtractUnverifiedClaims(tokenString string) (jwt.MapClaims, error) {
+	token, _, err := new(jwt.Parser).ParseUnverified(tokenString, jwt.MapClaims{})
+	if err != nil {
+		fmt.Println(err.Error())
+		return jwt.MapClaims{}, err
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		fmt.Println("claims not ok")
+		return jwt.MapClaims{}, fmt.Errorf("")
+	}
+
+	return claims, nil
 }

@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/TitusW/game-service/internal/entity"
 	"github.com/TitusW/game-service/pkg/token"
@@ -47,19 +48,14 @@ func (uc Usecase) Login(ctx context.Context, input entity.User) (entity.TokenRes
 	return tokenResponse, nil
 }
 
-func (uc Usecase) Logout(ctx context.Context, input entity.User) error {
-	keys, err := uc.tokenResource.ScanUserTokens(ctx, input.Email, "")
+func (uc Usecase) Logout(ctx context.Context, tokenString string) error {
+	claims, err := token.ExtractUnverifiedClaims(tokenString)
 	if err != nil {
 		return err
 	}
 
-	for _, key := range keys {
-		uc.tokenResource.DeleteUserTokenByKey(ctx, key)
-
-		if err != nil {
-			return err
-		}
-	}
+	key := fmt.Sprintf("%s:%s", claims["Ksuid"], tokenString)
+	uc.tokenResource.DeleteUserTokenByKey(ctx, key)
 
 	return nil
 }

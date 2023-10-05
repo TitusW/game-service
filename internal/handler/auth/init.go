@@ -8,7 +8,7 @@ import (
 
 type UsecaseItf interface {
 	Login(ctx context.Context, input entity.User) (entity.TokenResponse, error)
-	Logout(ctx context.Context, input entity.User) error
+	Logout(ctx context.Context, tokenString string) error
 }
 
 type Handler struct {
