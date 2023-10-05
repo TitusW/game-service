@@ -7,12 +7,16 @@ import (
 
 	"github.com/TitusW/game-service/config"
 	auth_handler "github.com/TitusW/game-service/internal/handler/auth"
+	ledger_handler "github.com/TitusW/game-service/internal/handler/ledger"
 	user_handler "github.com/TitusW/game-service/internal/handler/user"
 	userbankaccount_handler "github.com/TitusW/game-service/internal/handler/user-bank-account"
+	ledger_repo "github.com/TitusW/game-service/internal/repo/ledger"
 	token_repo "github.com/TitusW/game-service/internal/repo/token"
 	user_repo "github.com/TitusW/game-service/internal/repo/user"
 	userbankaccount_repo "github.com/TitusW/game-service/internal/repo/user-bank-account"
+	wallet_repo "github.com/TitusW/game-service/internal/repo/wallet"
 	auth_usecase "github.com/TitusW/game-service/internal/usecase/auth"
+	ledger_usecase "github.com/TitusW/game-service/internal/usecase/ledger"
 	user_usecase "github.com/TitusW/game-service/internal/usecase/user"
 	userbankaccount_usecase "github.com/TitusW/game-service/internal/usecase/user-bank-account"
 	"github.com/gin-gonic/gin"
@@ -68,13 +72,19 @@ func main() {
 		})
 	})
 
+	walletRepo := wallet_repo.New(db)
+
 	userRepo := user_repo.New(db)
-	userUsecase := user_usecase.New(userRepo)
+	userUsecase := user_usecase.New(userRepo, walletRepo, db)
 	userHandler := user_handler.New(userUsecase)
 
 	userBankAccountRepo := userbankaccount_repo.New(db)
 	userBankAccountUC := userbankaccount_usecase.New((userBankAccountRepo))
 	userBankAccountHandler := userbankaccount_handler.New(userBankAccountUC)
+
+	ledgerRepo := ledger_repo.New(db)
+	ledgerUsecase := ledger_usecase.New(ledgerRepo, walletRepo, db)
+	ledgerHandler := ledger_handler.New(ledgerUsecase)
 
 	tokenRepo := token_repo.New(rdb)
 	authUsecase := auth_usecase.New(userRepo, tokenRepo)
@@ -85,6 +95,8 @@ func main() {
 	router.GET("/users/:ksuid")
 
 	router.POST("/user-bank-accounts/register", userBankAccountHandler.Register)
+
+	router.POST("/ledgers/topup", ledgerHandler.Topup)
 
 	router.POST("/auth/login", authHandler.Login)
 	router.POST("/auth/logout", authHandler.Logout)

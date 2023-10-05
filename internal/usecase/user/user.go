@@ -5,25 +5,42 @@ import (
 
 	"github.com/TitusW/game-service/internal/entity"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 func (uc Usecase) Register(ctx context.Context, input entity.User) (entity.User, error) {
-	password, err := hashPassword(input.Password)
-	if err != nil {
-		return entity.User{}, err
-	}
+	var user entity.User
 
-	input.Password = password
-	user, err := uc.resource.Create(ctx, input)
-	if err != nil {
-		return entity.User{}, err
-	}
+	err := uc.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		password, err := hashPassword(input.Password)
+		if err != nil {
+			return err
+		}
 
-	return user, nil
+		input.Password = password
+		createdUser, err := uc.userResource.CreateTX(ctx, input, tx)
+		user = createdUser
+		if err != nil {
+			return err
+		}
+
+		newWallet := entity.Wallet{
+			UserKsuid: createdUser.Ksuid,
+		}
+
+		_, err = uc.walletResource.CreateTX(ctx, newWallet, tx)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	return user, err
 }
 
 func (uc Usecase) Update(ctx context.Context, input entity.User) (entity.User, error) {
-	user, err := uc.resource.Update(ctx, input)
+	user, err := uc.userResource.Update(ctx, input)
 	if err != nil {
 		return entity.User{}, err
 	}

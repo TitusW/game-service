@@ -6,6 +6,7 @@ import (
 
 	"github.com/TitusW/game-service/internal/entity"
 	"github.com/segmentio/ksuid"
+	"gorm.io/gorm"
 )
 
 func convertCreateToModel(input entity.User) User {
@@ -35,10 +36,10 @@ func convertToEntity(model User) entity.User {
 	}
 }
 
-func (m UserModule) Create(ctx context.Context, input entity.User) (entity.User, error) {
+func (m UserModule) CreateTX(ctx context.Context, input entity.User, tx *gorm.DB) (entity.User, error) {
 	user := convertCreateToModel(input)
 
-	err := m.db.WithContext(ctx).Create(&user).Error
+	err := tx.WithContext(ctx).Create(&user).Error
 
 	if err != nil {
 		return entity.User{}, err
