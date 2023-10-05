@@ -8,10 +8,13 @@ import (
 	"github.com/TitusW/game-service/config"
 	auth_handler "github.com/TitusW/game-service/internal/handler/auth"
 	user_handler "github.com/TitusW/game-service/internal/handler/user"
+	userbankaccount_handler "github.com/TitusW/game-service/internal/handler/user-bank-account"
 	token_repo "github.com/TitusW/game-service/internal/repo/token"
 	user_repo "github.com/TitusW/game-service/internal/repo/user"
+	userbankaccount_repo "github.com/TitusW/game-service/internal/repo/user-bank-account"
 	auth_usecase "github.com/TitusW/game-service/internal/usecase/auth"
 	user_usecase "github.com/TitusW/game-service/internal/usecase/user"
+	userbankaccount_usecase "github.com/TitusW/game-service/internal/usecase/user-bank-account"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/driver/postgres"
@@ -69,6 +72,10 @@ func main() {
 	userUsecase := user_usecase.New(userRepo)
 	userHandler := user_handler.New(userUsecase)
 
+	userBankAccountRepo := userbankaccount_repo.New(db)
+	userBankAccountUC := userbankaccount_usecase.New((userBankAccountRepo))
+	userBankAccountHandler := userbankaccount_handler.New(userBankAccountUC)
+
 	tokenRepo := token_repo.New(rdb)
 	authUsecase := auth_usecase.New(userRepo, tokenRepo)
 	authHandler := auth_handler.New(authUsecase)
@@ -76,6 +83,8 @@ func main() {
 	router.POST("/users/register", userHandler.Register)
 	router.GET("/users/")
 	router.GET("/users/:ksuid")
+
+	router.POST("/user-bank-accounts/register", userBankAccountHandler.Register)
 
 	router.POST("/auth/login", authHandler.Login)
 	router.POST("/auth/logout", authHandler.Logout)
