@@ -13,3 +13,5 @@ CREATE TABLE IF NOT EXISTS "game"."users" (
 -- migrate:down
 DROP TABLE IF EXISTS "game"."users";
 
+DROP SCHEMA IF EXISTS "game";
+
