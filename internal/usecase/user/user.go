@@ -79,6 +79,23 @@ func (uc Usecase) GetUserDetails(ctx context.Context, ksuid string) (entity.User
 	return userDetail, nil
 }
 
+func (uc Usecase) GetUsers(
+	ctx context.Context,
+	email string,
+	bankAccountName string,
+	bankAccountNumber string,
+	bankName string,
+	currentAmount float64,
+	operator string,
+) ([]entity.User, error) {
+	users, err := uc.userResource.GetUsers(ctx, email, bankAccountName, bankAccountNumber, bankName, currentAmount, operator)
+	if err != nil {
+		return []entity.User{}, err
+	}
+
+	return users, nil
+}
+
 func hashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	if err != nil {

@@ -11,6 +11,14 @@ type UserModuleItf interface {
 	CreateTX(ctx context.Context, input entity.User, tx *gorm.DB) (entity.User, error)
 	Update(ctx context.Context, input entity.User) (entity.User, error)
 	Get(ctx context.Context, ksuid string) (entity.User, error)
+	GetUsers(
+		ctx context.Context,
+		email string,
+		bankAccountName string,
+		bankAccountNumber string,
+		bankName string,
+		currentAmount float64,
+		operator string) ([]entity.User, error)
 }
 
 type WalletModuleItf interface {

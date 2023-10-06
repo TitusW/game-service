@@ -91,7 +91,7 @@ func main() {
 	authHandler := auth_handler.New(authUsecase)
 
 	router.POST("/users/register", userHandler.Register)
-	router.GET("/users/")
+	router.GET("/users/", userHandler.GetUsers)
 	router.GET("/users/:ksuid", userHandler.GetUserDetails)
 
 	router.POST("/user-bank-accounts/register", userBankAccountHandler.Register)

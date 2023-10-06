@@ -36,6 +36,14 @@ func convertToEntity(model User) entity.User {
 	}
 }
 
+func convertToEntities(rows []User) []entity.User {
+	var entities []entity.User
+	for _, row := range rows {
+		entities = append(entities, convertToEntity(row))
+	}
+	return entities
+}
+
 func (m UserModule) CreateTX(ctx context.Context, input entity.User, tx *gorm.DB) (entity.User, error) {
 	user := convertCreateToModel(input)
 
@@ -74,6 +82,36 @@ func (m UserModule) Get(ctx context.Context, ksuid string) (entity.User, error) 
 	}
 
 	returnUser := convertToEntity(user)
+
+	return returnUser, nil
+}
+
+func (m UserModule) GetUsers(
+	ctx context.Context,
+	email string,
+	bankAccountName string,
+	bankAccountNumber string,
+	bankName string,
+	currentAmount float64,
+	operator string,
+) ([]entity.User, error) {
+	var user []User
+
+	err := m.db.WithContext(ctx).Scopes(
+		filterByEmail(&email),
+		joinBankAccount(),
+		joinWallet(),
+		filterByBankAccountName(&bankAccountName),
+		filterByBankAccountNumber(&bankAccountNumber),
+		filterByBankName(&bankName),
+		filterByWalletCurrentAmount(&currentAmount, operator),
+	).Find(&user).Error
+
+	if err != nil {
+		return []entity.User{}, err
+	}
+
+	returnUser := convertToEntities(user)
 
 	return returnUser, nil
 }

@@ -2,6 +2,7 @@ package user
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/TitusW/game-service/internal/entity"
 	"github.com/gin-gonic/gin"
@@ -66,5 +67,35 @@ func (h Handler) GetUserDetails(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"data": userDetails,
+	})
+}
+
+func (h Handler) GetUsers(ctx *gin.Context) {
+	var users []entity.User
+	var email string = ctx.Query("email")
+	var bankAccountName string = ctx.Query("bankAccountName")
+	var bankAccountNumber string = ctx.Query("bankAccountNumber")
+	var bankName string = ctx.Query("bankName")
+	var currentAmountStr string = ctx.Query("currentAmount")
+	var operator string = ctx.Query("amountOperator")
+
+	currentAmount, err := strconv.ParseFloat(currentAmountStr, 64)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	users, err = h.uc.GetUsers(ctx, email, bankAccountName, bankAccountNumber, bankName, currentAmount, operator)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": users,
 	})
 }

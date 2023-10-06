@@ -10,6 +10,14 @@ type UsecaseItf interface {
 	Register(context.Context, entity.User) (entity.User, error)
 	Update(context.Context, entity.User) (entity.User, error)
 	GetUserDetails(ctx context.Context, ksuid string) (entity.UserDetail, error)
+	GetUsers(
+		ctx context.Context,
+		email string,
+		bankAccountName string,
+		bankAccountNumber string,
+		bankName string,
+		currentAmount float64,
+		operator string) ([]entity.User, error)
 }
 
 type Handler struct {
