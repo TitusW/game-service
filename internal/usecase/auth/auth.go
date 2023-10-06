@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/TitusW/game-service/internal/entity"
-	"github.com/TitusW/game-service/pkg/token"
+	tokenhelper "github.com/TitusW/game-service/pkg/token"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -24,7 +24,7 @@ func (uc Usecase) Login(ctx context.Context, input entity.User) (entity.TokenRes
 		return entity.TokenResponse{}, err
 	}
 
-	token, refreshToken, err := token.GenerateAllTokens(user.Email, user.Ksuid)
+	token, refreshToken, err := tokenhelper.GenerateAllTokens(user.Email, user.Ksuid)
 	if err != nil {
 		return entity.TokenResponse{}, err
 	}
@@ -49,7 +49,7 @@ func (uc Usecase) Login(ctx context.Context, input entity.User) (entity.TokenRes
 }
 
 func (uc Usecase) Logout(ctx context.Context, tokenString string) error {
-	claims, err := token.ExtractUnverifiedClaims(tokenString)
+	claims, err := tokenhelper.ExtractUnverifiedClaims(tokenString)
 	if err != nil {
 		return err
 	}

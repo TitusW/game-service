@@ -10,6 +10,7 @@ import (
 	ledger_handler "github.com/TitusW/game-service/internal/handler/ledger"
 	user_handler "github.com/TitusW/game-service/internal/handler/user"
 	userbankaccount_handler "github.com/TitusW/game-service/internal/handler/user-bank-account"
+	"github.com/TitusW/game-service/internal/middleware"
 	ledger_repo "github.com/TitusW/game-service/internal/repo/ledger"
 	token_repo "github.com/TitusW/game-service/internal/repo/token"
 	user_repo "github.com/TitusW/game-service/internal/repo/user"
@@ -91,15 +92,15 @@ func main() {
 	authHandler := auth_handler.New(authUsecase)
 
 	router.POST("/users/register", userHandler.Register)
-	router.GET("/users/", userHandler.GetUsers)
-	router.GET("/users/:ksuid", userHandler.GetUserDetails)
+	router.GET("/users/", middleware.Authentication(), userHandler.GetUsers)
+	router.GET("/users/:ksuid", middleware.Authentication(), userHandler.GetUserDetails)
 
-	router.POST("/user-bank-accounts/register", userBankAccountHandler.Register)
+	router.POST("/user-bank-accounts/register", middleware.Authentication(), userBankAccountHandler.Register)
 
-	router.POST("/ledgers/topup", ledgerHandler.Topup)
+	router.POST("/ledgers/topup", middleware.Authentication(), ledgerHandler.Topup)
 
 	router.POST("/auth/login", authHandler.Login)
-	router.POST("/auth/logout", authHandler.Logout)
+	router.POST("/auth/logout", middleware.Authentication(), authHandler.Logout)
 
 	router.Run()
 }
