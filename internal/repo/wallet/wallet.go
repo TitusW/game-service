@@ -56,3 +56,17 @@ func (m Module) CreateTX(ctx context.Context, input entity.Wallet, tx *gorm.DB) 
 
 	return convertToEntity(wallet), nil
 }
+
+func (m Module) GetByUserKsuid(ctx context.Context, userKsuid string) (entity.Wallet, error) {
+	var wallet Wallet
+
+	err := m.db.WithContext(ctx).Where("user_ksuid = ?", userKsuid).First(&wallet).Error
+
+	if err != nil {
+		return entity.Wallet{}, err
+	}
+
+	returnUser := convertToEntity(wallet)
+
+	return returnUser, nil
+}

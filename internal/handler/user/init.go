@@ -9,6 +9,7 @@ import (
 type UsecaseItf interface {
 	Register(context.Context, entity.User) (entity.User, error)
 	Update(context.Context, entity.User) (entity.User, error)
+	GetUserDetails(ctx context.Context, ksuid string) (entity.UserDetail, error)
 }
 
 type Handler struct {

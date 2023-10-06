@@ -51,3 +51,20 @@ func (h Handler) Update(ctx *gin.Context) {
 
 	return
 }
+
+func (h Handler) GetUserDetails(ctx *gin.Context) {
+	var userDetails entity.UserDetail
+	var ksuid string = ctx.Param("ksuid")
+
+	userDetails, err := h.uc.GetUserDetails(ctx, ksuid)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": userDetails,
+	})
+}

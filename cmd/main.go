@@ -74,10 +74,6 @@ func main() {
 
 	walletRepo := wallet_repo.New(db)
 
-	userRepo := user_repo.New(db)
-	userUsecase := user_usecase.New(userRepo, walletRepo, db)
-	userHandler := user_handler.New(userUsecase)
-
 	userBankAccountRepo := userbankaccount_repo.New(db)
 	userBankAccountUC := userbankaccount_usecase.New((userBankAccountRepo))
 	userBankAccountHandler := userbankaccount_handler.New(userBankAccountUC)
@@ -86,13 +82,17 @@ func main() {
 	ledgerUsecase := ledger_usecase.New(ledgerRepo, walletRepo, db)
 	ledgerHandler := ledger_handler.New(ledgerUsecase)
 
+	userRepo := user_repo.New(db)
+	userUsecase := user_usecase.New(userRepo, walletRepo, userBankAccountRepo, db)
+	userHandler := user_handler.New(userUsecase)
+
 	tokenRepo := token_repo.New(rdb)
 	authUsecase := auth_usecase.New(userRepo, tokenRepo)
 	authHandler := auth_handler.New(authUsecase)
 
 	router.POST("/users/register", userHandler.Register)
 	router.GET("/users/")
-	router.GET("/users/:ksuid")
+	router.GET("/users/:ksuid", userHandler.GetUserDetails)
 
 	router.POST("/user-bank-accounts/register", userBankAccountHandler.Register)
 

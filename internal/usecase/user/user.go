@@ -48,6 +48,37 @@ func (uc Usecase) Update(ctx context.Context, input entity.User) (entity.User, e
 	return user, nil
 }
 
+func (uc Usecase) GetUserDetails(ctx context.Context, ksuid string) (entity.UserDetail, error) {
+	var userDetail entity.UserDetail
+
+	user, err := uc.userResource.Get(ctx, ksuid)
+	if err != nil {
+		return userDetail, err
+	}
+
+	userDetail.Ksuid = user.Ksuid
+	userDetail.Email = user.Email
+
+	bankAccounts, err := uc.bankAccountResource.GetByUserKsuid(ctx, ksuid)
+	if err != nil {
+		return userDetail, err
+	}
+
+	for _, bankAccount := range bankAccounts {
+		userDetail.BankAccounts = append(userDetail.BankAccounts, bankAccount)
+	}
+
+	wallet, err := uc.walletResource.GetByUserKsuid(ctx, ksuid)
+	if err != nil {
+		return userDetail, err
+	}
+	userDetail.Wallet.Ksuid = wallet.Ksuid
+	userDetail.Wallet.UserKsuid = wallet.UserKsuid
+	userDetail.Wallet.CurrentAmount = wallet.CurrentAmount
+
+	return userDetail, nil
+}
+
 func hashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	if err != nil {
